@@ -139,8 +139,7 @@ h2{font:600 clamp(2rem,4vw,3rem)/1.05 'Playfair Display',serif;color:var(--navy)
 .thermo{display:flex;align-items:center;gap:14px;margin:20px 0 6px;flex-wrap:wrap}
 .thermo-bar{flex:1;min-width:180px;height:14px;border-radius:99px;background:rgba(255,255,255,.12);overflow:hidden}
 .thermo-fill{height:100%;width:0;background:linear-gradient(90deg,#87c9c0,var(--sun),var(--coral));border-radius:99px;transition:width 2.8s cubic-bezier(.22,1,.36,1)}
-@keyframes thermoPulse{0%,100%{width:100%}50%{width:76%}}
-.thermo-fill.pulse{animation:thermoPulse .65s ease-in-out 2}
+.thermo-fill.pulse{transition:width .35s ease-in-out}
 .thermo-label{font:500 .72rem 'DM Mono';letter-spacing:.08em;color:#ffd9c2;text-transform:uppercase}
 .thermo small{display:block;width:100%;color:rgba(255,255,255,.6);font-size:.78rem}
 .bottles{display:flex;flex-wrap:wrap;gap:10px;margin-top:22px}
@@ -490,7 +489,7 @@ footer{text-align:center;color:var(--muted);padding:20px 0 50px;font:500 .7rem '
   const th=$('#thermo'),tv=$('#thermoVal');let thermoDone=false,extra=0;
   function startThermoAnimation(){if(thermoDone)return;const rect=$('#final').getBoundingClientRect();if(rect.top>=window.innerHeight||rect.bottom<=0)return;
     thermoDone=true;th.style.width='100%';tv.textContent='0%';const start=performance.now(),duration=2800;
-    const timer=setInterval(()=>{const progress=Math.min((performance.now()-start)/duration,1),eased=1-Math.pow(1-progress,3);tv.textContent=Math.round(eased*120)+'%';if(progress===1){clearInterval(timer);tv.textContent='120%';th.addEventListener('animationend',()=>{tv.textContent='FUERA DE ESCALA';},{once:true});th.classList.add('pulse');}},30);}
+    const timer=setInterval(()=>{const progress=Math.min((performance.now()-start)/duration,1),eased=1-Math.pow(1-progress,3);tv.textContent=Math.round(eased*120)+'%';if(progress===1){clearInterval(timer);tv.textContent='120%';th.classList.add('pulse');let pulses=0;const pulseTimer=setInterval(()=>{pulses++;th.style.width=pulses%2?'76%':'100%';if(pulses===4){clearInterval(pulseTimer);tv.textContent='FUERA DE ESCALA';}},350);}},30);}
   window.addEventListener('scroll',startThermoAnimation,{passive:true});
   startThermoAnimation();
   th.parentElement.addEventListener('click',()=>{extra++;toast(['Lo volviste a medir. Subió.','Sigue subiendo. El instrumento pide disculpas.','Ya no entra en la página. Bancame en persona.'][Math.min(extra-1,2)]);});
